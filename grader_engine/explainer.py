@@ -9,11 +9,11 @@ from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 from langchain_core.prompts import PromptTemplate
 from langchain.output_parsers import StructuredOutputParser, ResponseSchema
-from langchain_groq import ChatGroq
+from langchain_community.chat_models import ChatOllama
 
 load_dotenv()
 
-DEFAULT_MODEL = os.getenv("LLM_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct")
+DEFAULT_MODEL = os.getenv("OLLAMA_MODEL", "mistral")
 
 response_schemas = [
     ResponseSchema(name="explanation", description="Detailed, synchronized explanation text"),
@@ -81,10 +81,9 @@ def generate_explanation(
         assigned_score=str(assigned_score)
     )
 
-    # IMPORTANT: do NOT pass reasoning_format
-    groq = ChatGroq(model=model_id)
+    llm = ChatOllama(model=model_id)
     try:
-        resp = groq.invoke(prompt_str)
+        resp = llm.invoke(prompt_str)
         raw = resp.content
     except Exception as e:
         if return_debug:

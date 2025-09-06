@@ -9,15 +9,15 @@ from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 from langchain_core.prompts import PromptTemplate
 from langchain.output_parsers import StructuredOutputParser, ResponseSchema
-from langchain_groq import ChatGroq
+from langchain_community.chat_models import ChatOllama
 
 load_dotenv()
 
 # -----------------------------------------------------------------------------
 # CONFIG
 # -----------------------------------------------------------------------------
-DEFAULT_MODEL = os.getenv("LLM_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct")
-# Ensure GROQ_API_KEY is set in your environment
+DEFAULT_MODEL = os.getenv("OLLAMA_MODEL", "mistral")
+# Ensure the Ollama service is running
 
 # -----------------------------------------------------------------------------
 # LLM OUTPUT SCHEMA (advisory; we still post-validate)
@@ -197,7 +197,7 @@ def grade_answer(
     return_debug: bool = False
 ) -> Dict[str, Any]:
     """
-    Grade a single answer via Groq and post-validate the structure.
+    Grade a single answer via Ollama and post-validate the structure.
     Returns:
       - total_score: int (recomputed from aligned, clamped scores)
       - rubric_scores: [{'criteria','score'}] aligned to rubric
@@ -225,11 +225,11 @@ def grade_answer(
         rag_context=rag_context
     )
 
-    # Call Groq
-    groq = ChatGroq(model=model_id)  # do not pass reasoning_format; some models reject it
+    # Call Ollama
+    llm = ChatOllama(model=model_id)
     raw = ""
     try:
-        resp = groq.invoke(prompt_str)
+        resp = llm.invoke(prompt_str)
         raw = resp.content
     except Exception as e:
         out = {
