@@ -126,8 +126,9 @@ def grading_result_page():
                     else:
                         out = grade_answer(
                             question=q["question"], ideal_answer=q["ideal_answer"], rubric=rubric_list,
-                            student_answer=stud_ans, language=language, model_name=None,
-                            rag_context=None, return_debug=True , nclude_header_in_feedback=False,
+                            student_answer=stud_ans, language=language,
+                            rag_context=None, return_debug=True,
+                            include_header_in_feedback=False
                         )
                         aligned = _align_to_rubric(
                             rubric_list=rubric_list,
@@ -136,13 +137,6 @@ def grading_result_page():
                             fuzzy_cutoff=0.60
                         )
                         feedback_txt = _dedupe_feedback(out.get("feedback", "") or "")
-                        if not feedback_txt:
-                            # minimal fallback
-                            total_ps = _total_possible(rubric_list)
-                            total_sc = sum(int(a["score"]) for a in aligned)
-                            feedback_txt = f"**Total: {total_sc}/{total_ps}**\nRubric Breakdown:\n" + \
-                                "\n".join([f"- {r['criteria']}: {aligned[i]['score']}/{r.get('points',0)}"
-                                           for i, r in enumerate(rubric_list)])
                         llm_debug = out.get("debug")
 
                     rubric_scores = [
