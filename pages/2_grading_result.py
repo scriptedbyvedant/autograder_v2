@@ -73,6 +73,44 @@ TRANSLATIONS = {
         "code_feedback_invalid": "La entrega no era código Python válido y no pudo ser ejecutada.",
         "code_feedback_runtime_error": "El código era sintácticamente correcto pero falló al ejecutarse. Error: `{error}`",
         "code_feedback_generic_fail": "La evaluación del código falló. Razón: {reason}"
+    },
+    "French": {
+        "page_title": "⚖️ Résultats de notation", "question": "Question", "ideal_answer": "Réponse idéale",
+        "student_answer": "Réponse de l\'étudiant", "rubric_breakdown": "🧮 Détail du barème",
+        "feedback": "📝 Commentaires", "save_changes": "💾 Enregistrer les modifications", "results_summary": "Résumé des résultats",
+        "detailed_view": "Notation et édition détaillées",
+        "no_data": "Veuillez d\'abord télécharger les données sur la page de téléchargement.", "no_answer": "Aucune réponse fournie.",
+        "debug_title": "🧪 Débogage du LLM", "retrieved_context_title": "Contexte récupéré",
+        "export_button": "📦 Télécharger tous les commentaires", "share_expander": "🔗 Partager le résultat avec un collègue",
+        "share_email_input": "Entrez l\'adresse e-mail du collègue :", "share_button": "Partager",
+        "share_success": "Résultat partagé avec succès !", "share_error": "Échec du partage du résultat.",
+        "invalid_email": "Veuillez saisir une adresse e-mail valide.",
+        "code_feedback_tests": "{passed} des {total} cas de test réussis.",
+        "code_feedback_failures_header": "\n**Tests échoués :**",
+        "code_feedback_failure_item": "- Entrée : `{input}`\n  - Attendu : `{expected}`\n  - Reçu : `{got}`",
+        "code_feedback_blank": "La soumission était vide.",
+        "code_feedback_invalid": "La soumission n\'était pas un code Python valide et n\'a pas pu être exécutée.",
+        "code_feedback_runtime_error": "Le code était syntaxiquement correct mais n\'a pas pu s\'exécuter. Erreur : `{error}`",
+        "code_feedback_generic_fail": "L\'évaluation du code a échoué. Raison : {reason}"
+    },
+    "Hindi": {
+        "page_title": "⚖️ ग्रेडिंग परिणाम", "question": "प्रश्न", "ideal_answer": "आदर्श उत्तर",
+        "student_answer": "छात्र का उत्तर", "rubric_breakdown": "🧮 रूब्रिक ब्रेकडाउन",
+        "feedback": "📝 प्रतिक्रिया", "save_changes": "💾 परिवर्तन सहेजें", "results_summary": "परिणाम सारांश",
+        "detailed_view": "विस्तृत ग्रेडिंग और संपादन",
+        "no_data": "कृपया पहले अपलोड पेज पर डेटा अपलोड करें।", "no_answer": "कोई उत्तर नहीं दिया गया।",
+        "debug_title": "🧪 एलएलएम डीबग", "retrieved_context_title": "पुनर्प्राप्त संदर्भ",
+        "export_button": "📦 सभी फीडबैक डाउनलोड करें", "share_expander": "🔗 किसी सहकर्मी के साथ परिणाम साझा करें",
+        "share_email_input": "सहकर्मी का ईमेल पता दर्ज करें:", "share_button": "साझा करें",
+        "share_success": "परिणाम सफलतापूर्वक साझा किया गया!", "share_error": "परिणाम साझा करने में विफल।",
+        "invalid_email": "कृपया एक वैध ईमेल पता दर्ज करें।",
+        "code_feedback_tests": "{total} में से {passed} टेस्ट केस पास हुए।",
+        "code_feedback_failures_header": "\n**असफल टेस्ट:**",
+        "code_feedback_failure_item": "- इनपुट: `{input}`\n  - अपेक्षित: `{expected}`\n  - मिला: `{got}`",
+        "code_feedback_blank": "सबमिशन खाली था।",
+        "code_feedback_invalid": "सबमिशन मान्य पायथन कोड नहीं था और निष्पादित नहीं किया जा सका।",
+        "code_feedback_runtime_error": "कोड वाक्यात्मक रूप से सही था लेकिन चलने में विफल रहा। त्रुटि: `{error}`",
+        "code_feedback_generic_fail": "कोड मूल्यांकन विफल रहा। कारण: {reason}"
     }
 }
 
@@ -241,7 +279,7 @@ def grading_result_page():
         progress_bar.empty()
         st.success("All answers have been graded and saved!")
 
-    grading_results = st.session_state["grading_cache"]["results"]
+    grading_results = st.session_state["grading_cache"]['results']
 
     st.subheader(T["results_summary"])
     rows = []
