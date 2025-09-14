@@ -1,3 +1,4 @@
+
 # File: grader_engine/text_grader.py
 
 import os
@@ -21,18 +22,14 @@ load_dotenv()
 # -----------------------------------------------------------------------------
 
 # --- Base Model Configuration ---
-# This is the model that will be used if no fine-tuned model is found.
 OLLAMA_FALLBACK_MODEL = os.getenv("OLLAMA_MODEL", "mistral")
 
 # --- Fine-Tuned Model Configuration ---
-# The base model used for fine-tuning. This MUST match the model from fine_tune.py
 BASE_MODEL_NAME = "mistralai/Mistral-7B-v0.1"
-# The path to the trained LoRA adapters from the fine-tuning process.
 ADAPTER_PATH = os.path.join(os.path.dirname(__file__), '..', 'training', 'results', 'final_model')
 
-
 # -----------------------------------------------------------------------------
-# LLM OUTPUT SCHEMA (advisory; we still post-validate)
+# LLM OUTPUT SCHEMA
 # -----------------------------------------------------------------------------
 response_schemas = [
     ResponseSchema(name="total_score",   description="Sum of rubric points awarded (integer)"),
@@ -42,9 +39,8 @@ response_schemas = [
 output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
 
 # -----------------------------------------------------------------------------
-# PROMPT
+# PROMPT (UPDATED for Multimodal Context)
 # -----------------------------------------------------------------------------
-# This template is used for BOTH fine-tuned and Ollama models.
 BASE_TEMPLATE = """
 You are a strict grader. Grade the student's answer strictly by the provided rubric.
 Respond in {language}.
@@ -57,6 +53,8 @@ Ideal Answer:
 
 Rubric (JSON list of {{'criteria','points'}}):
 {rubric_json}
+
+{multimodal_context_block}
 
 Student Answer:
 {student_answer}
@@ -80,9 +78,10 @@ def _make_prompt(
     ideal_answer: str,
     rubric_json: str,
     student_answer: str,
-    rag_context: Optional[Dict[str, Any]] = None
+    rag_context: Optional[Dict[str, Any]] = None,
+    multimodal_context: Optional[str] = None
 ) -> str:
-    """Compose the final prompt; include exemplars if provided via RAG."""
+    """Compose the final prompt; include exemplars and multimodal context if provided."""
     exemplars_txt = ""
     if rag_context:
         ex = rag_context.get("exemplars", []) or []
@@ -97,11 +96,16 @@ def _make_prompt(
         if not ideal_answer and rag_context.get("ideal"):
             ideal_answer = rag_context["ideal"]
 
+    multimodal_context_txt = ""
+    if multimodal_context:
+        multimodal_context_txt = f"The following context from the professor's materials is also available:\n{multimodal_context}\n"
+
     tmpl = PromptTemplate(
         template=BASE_TEMPLATE,
         input_variables=[
             "language", "question", "ideal_answer",
-            "rubric_json", "student_answer", "exemplar_block"
+            "rubric_json", "student_answer", "exemplar_block",
+            "multimodal_context_block"
         ],
         partial_variables={"format_instructions": output_parser.get_format_instructions()},
     )
@@ -111,11 +115,12 @@ def _make_prompt(
         ideal_answer=ideal_answer,
         rubric_json=rubric_json,
         student_answer=student_answer,
-        exemplar_block=exemplars_txt
+        exemplar_block=exemplars_txt,
+        multimodal_context_block=multimodal_context_txt
     )
 
 # -----------------------------------------------------------------------------
-# ROBUST PARSING + ALIGNMENT HELPERS
+# ROBUST PARSING + ALIGNMENT HELPERS (Unchanged)
 # -----------------------------------------------------------------------------
 def _extract_json(raw: str) -> str:
     cleaned = re.sub(r"^```(?:json)?|```$", "", raw.strip(), flags=re.MULTILINE).strip()
@@ -124,12 +129,9 @@ def _extract_json(raw: str) -> str:
 
 def _as_int(x, default: int = 0) -> int:
     try:
-        if isinstance(x, (int, float)):
-            return int(round(x))
-        if isinstance(x, str):
-            return int(round(float(x.strip())))
-    except Exception:
-        pass
+        if isinstance(x, (int, float)): return int(round(x))
+        if isinstance(x, str): return int(round(float(x.strip())))
+    except Exception: pass
     return int(default)
 
 def _normalize(s: str) -> str:
@@ -140,29 +142,16 @@ def _align_and_clamp(
     model_breakdown: List[Dict[str, Any]],
     fuzzy_cutoff: float = 0.60
 ) -> (List[Dict[str, Any]], Dict[str, Any]):
-    """
-    Align model breakdown to rubric order, clamp scores to [0, points].
-    Returns (aligned_list, sanity_report).
-    """
-    sanity = {
-        "unknown_criteria": [],
-        "over_allocated": [],
-        "coerced_types": False,
-        "model_items_seen": 0
-    }
-    if not rubric:
-        return [], sanity
+    sanity = {"unknown_criteria": [], "over_allocated": [], "coerced_types": False, "model_items_seen": 0}
+    if not rubric: return [], sanity
 
     mm: Dict[str, int] = {}
     keys: List[str] = []
     for it in (model_breakdown or []):
-        if not isinstance(it, dict):
-            continue
-        c = it.get("criteria", "")
-        s_raw = it.get("score", 0)
+        if not isinstance(it, dict): continue
+        c, s_raw = it.get("criteria", ""), it.get("score", 0)
         s = _as_int(s_raw, 0)
-        if s != s_raw:
-            sanity["coerced_types"] = True
+        if s != s_raw: sanity["coerced_types"] = True
         k = _normalize(c)
         if k:
             mm[k] = s
@@ -171,19 +160,16 @@ def _align_and_clamp(
 
     aligned: List[Dict[str, Any]] = []
     for r in rubric:
-        crit = r.get("criteria", "")
-        pts  = _as_int(r.get("points", 0), 0)
+        crit, pts = r.get("criteria", ""), _as_int(r.get("points", 0), 0)
         norm = _normalize(crit)
         if norm in mm:
             sc = mm[norm]
         else:
             match = difflib.get_close_matches(norm, keys, n=1, cutoff=fuzzy_cutoff)
             sc = mm.get(match[0], 0) if match else 0
-            if not match:
-                sanity["unknown_criteria"].append(crit)
+            if not match: sanity["unknown_criteria"].append(crit)
 
-        if sc > pts:
-            sanity["over_allocated"].append({"criteria": crit, "score": sc, "max": pts})
+        if sc > pts: sanity["over_allocated"].append({"criteria": crit, "score": sc, "max": pts})
         sc = max(0, min(sc, pts))
         aligned.append({"criteria": crit, "score": sc})
 
@@ -196,61 +182,29 @@ def _feedback_header(rubric: List[Dict[str, Any]], aligned: List[Dict[str, Any]]
         lines.append(f"- {r.get('criteria','')}: {int(a.get('score',0))}/{_as_int(r.get('points',0))}")
     return "\n".join(lines)
 
-
 def _get_raw_prediction_finetuned(prompt: str) -> (str, str):
-    """Generates a prediction using the fine-tuned PEFT model.
-       Requires a GPU with sufficient VRAM.
-    """
     model_id = f"{BASE_MODEL_NAME} (PEFT Adapters)"
     print(f"Loading fine-tuned model from {ADAPTER_PATH}...")
-
-    # Configure quantization to load the model in 4-bit, saving memory.
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16,
-        bnb_4bit_use_double_quant=False,
-    )
-
-    # Load the base model with quantization.
-    base_model = AutoModelForCausalLM.from_pretrained(
-        BASE_MODEL_NAME,
-        quantization_config=bnb_config,
-        device_map="auto",
-        trust_remote_code=True
-    )
+    bnb_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_use_double_quant=False)
+    base_model = AutoModelForCausalLM.from_pretrained(BASE_MODEL_NAME, quantization_config=bnb_config, device_map="auto", trust_remote_code=True)
     base_model.config.use_cache = False
-
-    # Load the PEFT model by applying the adapters to the base model.
     model = PeftModel.from_pretrained(base_model, ADAPTER_PATH)
-
-    # Load the tokenizer.
     tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_NAME, trust_remote_code=True)
     tokenizer.pad_token = tokenizer.eos_token
-
-    # Generate the prediction.
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
     output_sequences = model.generate(input_ids=inputs["input_ids"], max_new_tokens=1024)
-    
-    # Decode the output and strip the prompt from the beginning.
     raw_output = tokenizer.decode(output_sequences[0], skip_special_tokens=True)
-    # The raw output includes the prompt, so we remove it.
-    clean_output = raw_output[len(prompt):].strip()
-    
-    return clean_output, model_id
+    return raw_output[len(prompt):].strip(), model_id
 
 def _get_raw_prediction_ollama(prompt: str) -> (str, str):
-    """Generates a prediction using the fallback Ollama model.
-    """
     model_id = OLLAMA_FALLBACK_MODEL
     print(f"Using fallback Ollama model: {model_id}")
     llm = ChatOllama(model=model_id)
     resp = llm.invoke(prompt)
     return resp.content, model_id
 
-
 # -----------------------------------------------------------------------------
-# PUBLIC API
+# PUBLIC API (UPDATED for Multimodal Context)
 # -----------------------------------------------------------------------------
 def grade_answer(
     question: str,
@@ -258,29 +212,27 @@ def grade_answer(
     rubric: List[Dict[str, Any]],
     student_answer: str,
     language: str = "English",
-    model_name: Optional[str] = None, # model_name is now ignored, but kept for API compatibility
+    model_name: Optional[str] = None,
     rag_context: Optional[Dict[str, Any]] = None,
+    multimodal_context: Optional[str] = None, # NEW parameter
     return_debug: bool = False,
     include_header_in_feedback: bool = True
 ) -> Dict[str, Any]:
     """
-    Grade a single answer. It will prioritize using a fine-tuned model if available,
-    otherwise it will fall back to using an Ollama model.
+    Grade a single answer, using a fine-tuned or fallback model, now with multimodal context.
     """
     use_finetuned = os.path.isdir(ADAPTER_PATH)
     
-    # Normalize rubric
     rubric = json.loads(rubric) if isinstance(rubric, str) else (rubric or [])
     rubric_json = json.dumps(rubric, ensure_ascii=False)
 
-    # Build prompt
     prompt_str = _make_prompt(
         language=language,
         question=question, ideal_answer=ideal_answer, rubric_json=rubric_json,
-        student_answer=student_answer, rag_context=rag_context
+        student_answer=student_answer, rag_context=rag_context,
+        multimodal_context=multimodal_context
     )
 
-    # Get raw prediction from either the fine-tuned model or Ollama
     raw, model_id = "", ""
     try:
         if use_finetuned:
@@ -288,41 +240,28 @@ def grade_answer(
         else:
             raw, model_id = _get_raw_prediction_ollama(prompt_str)
     except Exception as e:
-        # Handle potential errors during model inference (e.g., CUDA out of memory)
-        out = {
-            "total_score":   0,
-            "rubric_scores": [{"criteria": r.get("criteria",""), "score": 0} for r in rubric],
-            "feedback":      f"Grading failed: {e}"
-        }
+        out = {"total_score": 0, "rubric_scores": [{"criteria": r.get("criteria",""), "score": 0} for r in rubric], "feedback": f"Grading failed: {e}"}
         if return_debug:
             out["debug"] = {"model": "N/A", "prompt": prompt_str, "raw_output": str(e), "sanity": {"error": "invoke_failed"}}
         return out
 
-    # --- Post-processing (same for both models) ---
-
-    # Parse JSON from the model's raw output
     parsed = {}
     try: parsed = output_parser.parse(raw)
-    except Exception: 
+    except Exception:
         try: parsed = json.loads(_extract_json(raw))
         except Exception: parsed = {}
 
-    # Extract fields
     model_total = _as_int(parsed.get("total_score", 0), 0)
     model_breakdown = parsed.get("rubric_scores", []) or []
     model_feedback = parsed.get("feedback", "")
     if not isinstance(model_feedback, str): model_feedback = str(model_feedback)
 
-    # Align scores to the rubric and clamp values
     aligned, sanity = _align_and_clamp(rubric, model_breakdown)
-
-    # Recompute total score from the aligned rubric (the source of truth)
     total_awarded = int(sum(int(it["score"]) for it in aligned))
     if model_total != total_awarded:
         sanity["model_total"] = model_total
         sanity["recomputed_total"] = total_awarded
 
-    # Build the final feedback string
     body = model_feedback.strip()
     if include_header_in_feedback:
         header = _feedback_header(rubric, aligned, total_awarded)
@@ -330,12 +269,7 @@ def grade_answer(
     else:
         full_feedback = body
 
-    # Final result object
-    result = {
-        "total_score":   total_awarded,
-        "rubric_scores": aligned,
-        "feedback":      full_feedback
-    }
+    result = {"total_score": total_awarded, "rubric_scores": aligned, "feedback": full_feedback}
     if return_debug:
         result["debug"] = {"model": model_id, "prompt": prompt_str, "raw_output": raw, "sanity": sanity}
     return result

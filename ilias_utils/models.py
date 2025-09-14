@@ -1,3 +1,4 @@
+
 # ilias_utils/models.py
 from dataclasses import dataclass, field, asdict
 from typing import List, Optional, Dict, Any
@@ -9,6 +10,7 @@ class StudentFile:
     filename: str                # basename.ext
     size: int                    # bytes
     content_type: Optional[str] = None  # guessed content type
+    multimodal_content: List[Dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass
@@ -19,41 +21,36 @@ class StudentFolder:
     email: Optional[str]
     matric: Optional[str]
     files: List[StudentFile] = field(default_factory=list)
+    answers: Dict[str, str] = field(default_factory=dict) # NEW: To store parsed answers
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "StudentFolder":
-        files = [StudentFile(**f) for f in d.get("files", [])]
-        return StudentFolder(
-            raw_folder=d.get("raw_folder"),
-            lastname=d.get("lastname"),
-            firstname=d.get("firstname"),
-            email=d.get("email"),
-            matric=d.get("matric"),
-            files=files,
-        )
-
 
 @dataclass
 class IngestResult:
-    assignment_name: str                 # "assignment-1"
-    excel_path: Optional[str]            # top-level xlsx/xls under root (if any)
+    assignment_name: str
     student_folders: List[StudentFolder]
+    excel_path: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        return {
-            "assignment_name": self.assignment_name,
-            "excel_path": self.excel_path,
-            "student_folders": [sf.to_dict() for sf in self.student_folders],
-        }
+        return asdict(self)
 
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "IngestResult":
-        sfs = [StudentFolder.from_dict(x) for x in d.get("student_folders", [])]
-        return IngestResult(
-            assignment_name=d.get("assignment_name"),
-            excel_path=d.get("excel_path"),
-            student_folders=sfs,
-        )
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'IngestResult':
+        # De-serialize nested StudentFolder objects correctly
+        student_folders = []
+        for sf_data in data.get("student_folders", []):
+            # Extract files and answers if they exist
+            files_data = sf_data.pop("files", [])
+            answers_data = sf_data.pop("answers", {})
+            
+            # Create StudentFile objects
+            student_files = [StudentFile(**f_data) for f_data in files_data]
+            
+            # Create StudentFolder object
+            sf = StudentFolder(**sf_data, files=student_files, answers=answers_data)
+            student_folders.append(sf)
+
+        data["student_folders"] = student_folders
+        return cls(**data)
