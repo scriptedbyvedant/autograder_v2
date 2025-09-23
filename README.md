@@ -21,23 +21,22 @@ Featuring a full Human-in-the-Loop (HITL) workflow, secure sandboxed code execut
 | 🧠 **RAG-Powered Consistency** | Leverages a FAISS vector store to build an institutional memory from human-verified corrections, ensuring consistent application of standards over time. |
 | 🔒 **Secure Code Evaluation** | Executes programming assignments in an isolated Docker sandbox, combining objective `unittest` results with qualitative AI feedback on code style. |
 | 🧑‍🏫 **Human-in-the-Loop** | Provides educators with an intuitive UI to review, edit, and finalize all AI-generated grades, ensuring they always have the final say. |
+| 🚀 **MLOps & LMS Ready** | Designed with versioned feedback for CI/CD and MLOps workflows (MLflow, GitHub Actions), with planned integration for LMS like ILIAS. |
+| 🖼️ **Multimodal Support** | Architected to support future evaluation of image-based answers, handwritten notes, and scientific sketches using OCR technology. |
 
 </div>
 
 ---
 
-### 🏗️ Project Architecture
+### 🛠️ Technology Stack
 
-The system is designed with a modern, multi-tiered architecture to ensure a clean separation of concerns:
-
-- **Frontend:** A user-friendly interface built with **Streamlit** provides all user-facing interactions, from data upload to grade reviews.
-- **Backend:** A robust **Python** server acts as the central orchestrator, handling business logic, database transactions, and job delegation to the AI engine.
-- **Database:** A **PostgreSQL** database serves as the single source of truth, storing all user data, submissions, and grading results with relational integrity.
-- **AI & Data Layer:** This core layer includes:
-  - The **AI Grading Engine** which manages the multi-agent system.
-  - **Ollama** for serving local LLMs like Mistral.
-  - A **FAISS Vector Store** that powers the RAG system's memory.
-  - A **Docker Sandbox** for securely executing and testing student code.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit" />
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white" alt="Ollama" />
+</p>
 
 ---
 
@@ -47,80 +46,65 @@ This guide will walk you through deploying the AI Grading Framework on your loca
 
 ### 1. Prerequisites
 
-Before you begin, ensure the following services are installed and running:
-
-- Python 3.8+
-- Docker
-- PostgreSQL
-- [Ollama](https://ollama.com/) for serving local LLMs
+- Python 3.8+ | Docker | PostgreSQL | [Ollama](https://ollama.com/)
 
 ### 2. Environment Setup
 
-Follow these steps to configure your environment and install the necessary components.
-
 **Step 1: Clone the Repository**
-
-Open your terminal and clone the project source code.
 ```bash
 git clone https://github.com/vedant-m/multi-agent-llm-grader.git
 cd multi-agent-llm-grader
 ```
 
 **Step 2: Install Dependencies**
-
-Create a virtual environment (optional but recommended) and install the required Python packages.
 ```bash
 pip install -r requirements.txt
 ```
 
 **Step 3: Configure the Database**
 
-Log in to PostgreSQL and create the dedicated user and database for the application. These credentials match the default `credentials.yaml`.
+Log in to PostgreSQL and create the database and user. 
 ```sql
--- Connect via psql or your preferred SQL client
 CREATE DATABASE autograder_db;
 CREATE USER vedant WITH PASSWORD 'vedant';
 GRANT ALL PRIVILEGES ON DATABASE autograder_db TO vedant;
 ```
+> **Note:** The application uses the `credentials.yaml` file for database settings. If you use different credentials, please update this file accordingly.
 
 **Step 4: Initialize the Database Schema**
-
-Run the initialization script to automatically set up all required tables.
 ```bash
 python init_db.py
 ```
 
 **Step 5: Pull the Local LLM**
 
-Ensure Ollama is running, then pull the `mistral` model, which is used by the grading engine.
+Ensure Ollama is running, then pull the required `mistral` model.
 ```bash
 ollama pull mistral
 ```
 
 ### 3. Running the Application
 
-With the environment configured, you are now ready to launch the application.
-
-**Step 1: Start Services**
-
-Ensure the **Docker** daemon and the **Ollama** application are running in the background.
-
-**Step 2: Launch the Streamlit App**
-
-From the root of the project directory, run the following command:
+Ensure the **Docker** daemon and the **Ollama** application are running, then launch the app:
 ```bash
 streamlit run app.py
 ```
+Your browser will open to `http://localhost:8501`. You can now log in and begin exploring!
 
-Your web browser will automatically open to the application's local URL (usually `http://localhost:8501`). You can now log in and begin exploring the future of grading!
+---
+
+### 🗺️ Project Roadmap
+
+- [ ] **Full MLOps Integration:** Implement an end-to-end MLflow pipeline for tracking experiments and versioning models/feedback.
+- [ ] **LMS Integration:** Develop production-ready connectors for popular Learning Management Systems like ILIAS and Canvas.
+- [ ] **Activate Multimodal Grading:** Implement the OCR and image-processing pipeline for grading graphical and handwritten submissions.
+- [ ] **Analytics Dashboard:** Build a dashboard for educators to visualize class performance, question difficulty, and grading consistency over time.
 
 ---
 
 ## 🤝 Contributing
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
 
 1.  Fork the Project
 2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
