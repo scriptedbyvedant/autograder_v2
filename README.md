@@ -1,10 +1,10 @@
 
-# 🤖 AI Grading Framework: A Multi-Agent Approach
+# 🤖 AI Grading Framework: A LangChain Multi-Agent System
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/release/python-380/)
 
-An advanced, AI-powered grading platform designed to bring reliability, consistency, and transparency to automated academic assessment. This project moves beyond single-model limitations by implementing a sophisticated multi-agent architecture where a team of AI agents collaborates to grade student work. 
+An advanced academic grading framework built on **LangChain** that leverages a **Multi-Agent RAG architecture** to deliver reliable, consistent, and transparent assessments. This project moves beyond the limitations of single-model systems by simulating a human grading committee, complete with specialized AI agents, a long-term memory, and full LMS integration.
 
 <div align="center">
 
@@ -22,19 +22,65 @@ This framework solves that problem by simulating a human grading committee. By i
 
 ---
 
+### 🏗️ Architectural Overview
+
+This diagram illustrates the flow of data and interaction between the core components of the system.
+
+```mermaid
+graph TD
+    subgraph User Interface
+        A[Streamlit Web App]
+    end
+
+    subgraph Backend & Orchestration
+        B{LangChain Backend}
+    end
+
+    subgraph Core AI Engine
+        C[Multi-Agent Grader]
+        D[Secure Code Grader]
+        E[RAG System]
+        F[Multimodal Processor]
+    end
+
+    subgraph External & Data Services
+        G[PostgreSQL Database]
+        H[Docker Sandbox]
+        I[Ollama LLM Server]
+        J[FAISS Vector Store]
+        K[ILIAS LMS API]
+        L[Tesseract OCR]
+    end
+
+    A -->|1. User Uploads & Requests| B
+    B -->|2. Orchestrates Grading| C
+    B -->|3. Dispatches Code Jobs| D
+    B -->|4. Retrieves Similar Corrections| E
+    B -->|5. Processes PDFs/Images| F
+    B -->|9. CRUD Operations| G
+
+    C -->|6. LLM Calls to Agents| I
+    D -->|7. Executes & Tests Code| H
+    E -->|Embeds & Searches| J
+    F -->|Extracts Text from Images| L
+    B -->|8. Syncs Grades to LMS| K
+```
+
+---
+
 ### ✨ Core Features
 
 <div align="center">
 
 | Feature | Description |
 | :---: | :--- |
-| 🤖 **Multi-Agent Collaboration** | Simulates a peer review by using diverse AI agents to grade concurrently, ensuring fairer, more robust, and less biased scoring through consensus. |
+| 🤖 **Multi-Agent Collaboration** | Simulates a peer review using a team of LangChain agents to grade concurrently, ensuring fairer, more robust, and less biased scoring through consensus. |
 | 💡 **Explainable AI** | Delivers transparent, rubric-aligned justifications for every score. Understand not just the *what*, but the *why* behind each grade. |
-| 🧠 **RAG-Powered Consistency** | Leverages a FAISS vector store to build an institutional memory from human-verified corrections, ensuring consistent application of standards over time. |
+| 🧠 **RAG-Powered Consistency** | Leverages a FAISS vector store and Sentence-Transformers to build an institutional memory, ensuring consistent application of standards over time. |
 | 🔒 **Secure Code Evaluation** | Executes programming assignments in an isolated Docker sandbox, combining objective `unittest` results with qualitative AI feedback on code style. |
 | 🧑‍🏫 **Human-in-the-Loop** | Provides educators with an intuitive UI to review, edit, and finalize all AI-generated grades, ensuring they always have the final say. |
-| 🚀 **MLOps & LMS Ready** | Designed with versioned feedback for CI/CD workflows, with planned integration for LMS like ILIAS and Canvas.
-| 🖼️ **Multimodal Support** | Architected to support future evaluation of image-based answers, handwritten notes, and scientific sketches.
+| 🔌 **LMS Integration** | Features built-in connectivity for the **ILIAS** Learning Management System, with a modular design for future platform support. |
+| 🖼️ **Multimodal Grading** | Actively grades image-based answers, handwritten notes, and diagrams using an integrated **Tesseract OCR** pipeline. |
 
 </div>
 
@@ -42,40 +88,63 @@ This framework solves that problem by simulating a human grading committee. By i
 
 ### 🛠️ Technology Stack
 
-A detailed look at the technologies, frameworks, and libraries that power the AI Grading Framework.
+*A comprehensive list of the key technologies and libraries used in this project.*
 
 <p align="center">
-  <b>Core & Frontend</b><br>
+  <b>AI Orchestration & Agents</b><br>
+  <img src="https://img.shields.io/badge/LangChain-009688?style=for-the-badge&logo=langchain&logoColor=white" alt="LangChain" />
+  <img src="https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white" alt="Ollama" />
+</p>
+<p align="center">
+  <b>RAG, Embeddings & OCR</b><br>
+  <img src="https://img.shields.io/badge/FAISS-3B5998?style=for-the-badge&logo=facebook&logoColor=white" alt="FAISS" />
+  <img src="https://img.shields.io/badge/Sentence Transformers-3B769F?style=for-the-badge" alt="Sentence Transformers" />
+  <img src="https://img.shields.io/badge/Tesseract-FF6F61?style=for-the-badge&logo=tesseract&logoColor=white" alt="Tesseract" />
+</p>
+<p align="center">
+  <b>Core, Backend & Frontend</b><br>
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
   <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit" />
-  <img src="https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white" alt="Pandas" />
-  <img src="https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white" alt="NumPy" />
-</p>
-
-<p align="center">
-  <b>AI & Machine Learning</b><br>
-  <img src="https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white" alt="Ollama" />
-  <img src="https://img.shields.io/badge/FAISS-3B5998?style=for-the-badge&logo=facebook&logoColor=white" alt="FAISS" />
-  <img src="https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" alt="scikit-learn" />
-  <img src="https://img.shields.io/badge/PyPDF2-D32F2F?style=for-the-badge" alt="PyPDF2" />
-  <img src="https://img.shields.io/badge/Concurrent.futures-4B8BBE?style=for-the-badge" alt="concurrent.futures" />
-</p>
-
-<p align="center">
-  <b>Database & Backend</b><br>
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
   <img src="https://img.shields.io/badge/SQLAlchemy-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white" alt="SQLAlchemy" />
-  <img src="https://img.shields.io/badge/psycopg2-336791?style=for-the-badge" alt="psycopg2" />
 </p>
-
 <p align="center">
-  <b>Infrastructure & DevOps</b><br>
+  <b>Infrastructure & Tooling</b><br>
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
   <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git" />
-  <img src="https://img.shields.io/badge/unittest-2C3E50?style=for-the-badge" alt="unittest" />
-  <img src="https://img.shields.io/badge/PyYAML-CB172C?style=for-the-badge" alt="PyYAML" />
-  <img src="https://img.shields.io/badge/MLflow-0194E2?style=for-the-badge&logo=mlflow&logoColor=white" alt="MLflow" />
 </p>
+
+---
+
+### 📂 Project Structure
+
+```
+multi-agent-llm-grader/
+├── 📄 .gitignore
+├── 🐳 Dockerfile
+├── 🔑 credentials.yaml
+├── 📦 requirements.txt
+├── 📜 LICENSE
+├── 🖼️ README.md
+├── 🚀 app.py                 # Main Streamlit application entry point
+├── 🔌 ilias_api.py           # Handles ILIAS LMS connectivity
+├── 💾 init_db.py             # Initializes the database schema
+|
+├── 📂 database/             # Manages all database interactions
+│   ├── models.py            # SQLAlchemy ORM models
+│   └── postgres_handler.py  # Core database logic
+|
+├── 📂 grader_engine/        # The core AI grading logic
+│   ├── multi_agent_grader.py # Main multi-agent orchestration
+│   └── secure_code_grader.py # Secure code execution via Docker
+|
+├── 📂 pages/                # Additional Streamlit pages
+│   ├── 1_✍️_Manual_Grading.py
+│   └── 2_📊_Grading_Analytics.py
+|
+└── 📂 templates/            # Code templates for assignments
+    └── code_template.py
+```
 
 ---
 
@@ -85,54 +154,80 @@ A detailed look at the technologies, frameworks, and libraries that power the AI
 
 **1. Clone & Install**
 ```bash
-# Clone the repository
 git clone https://github.com/vedant-m/multi-agent-llm-grader.git
 cd multi-agent-llm-grader
-
-# Install Python dependencies
 pip install -r requirements.txt
 ```
 
-**2. Database & Model Setup**
-```bash
-# Connect to PostgreSQL and run these commands
-CREATE DATABASE autograder_db;
-CREATE USER vedant WITH PASSWORD 'vedant';
-GRANT ALL PRIVILEGES ON DATABASE autograder_db TO vedant;
+**2. Configure Environment**
 
-# Initialize the database schema
+All credentials and sensitive information are managed in `credentials.yaml`.
+
+- Create the file: `cp credentials.yaml.template credentials.yaml`
+- Edit `credentials.yaml` with your details:
+
+```yaml
+# credentials.yaml
+postgres:
+  user: "vedant"
+  password: "vedant"
+  host: "localhost"
+  port: "5432"
+  dbname: "autograder_db"
+
+ilias:
+  # ILIAS API endpoint, user, and password
+  endpoint: "https://your-ilias-instance.com/webservice/soap/server.php"
+  user: "ilias-api-user"
+  password: "api-password"
+```
+
+**3. Database & Model Setup**
+```bash
+# From a SQL client, create the database and user defined in your YAML
+CREATE DATABASE autograder_db;
+
+# Initialize the schema
 python init_db.py
 
-# Pull the local LLM via Ollama
+# Pull the LLM via Ollama
 ollama pull mistral
 ```
-> **Note:** Database credentials are set in `credentials.yaml`. Modify this file if you use different settings.
 
-**3. Launch the Application**
+**4. Launch the Application**
 ```bash
-# Ensure Docker and Ollama are running, then:
 streamlit run app.py
 ```
-Navigate to `http://localhost:8501` and start grading!
+Navigate to `http://localhost:8501` to begin!
 
 ---
 
-### 🔄 How It Works: The Grading Lifecycle
+### ⚙️ Deployment & Security
 
-1.  **Upload:** The educator uploads a PDF containing the assignment questions, ideal answers, and a detailed grading rubric.
-2.  **Submit:** Students (or the educator) upload their completed assignments.
-3.  **Grade:** The educator initiates the grading process. The AI Grading Engine dispatches a team of agents to evaluate each submission against the rubric.
-4.  **Review:** The initial AI-generated scores and feedback appear in the UI. The system flags grades where the agents had low consensus (high variance).
-5.  **Correct (HITL):** The educator reviews the results, making any necessary corrections. Each correction is automatically saved and used to enrich the RAG system's knowledge base, making future grading even more accurate.
+- **Deployment:** For a production-like setup, it is highly recommended to use Docker Compose to orchestrate the Streamlit app, the PostgreSQL database, and the Ollama server. This ensures a consistent and reproducible environment.
+
+- **Security:** This framework is designed with security in mind. The `Secure Code Grader` executes all student code in a fully isolated Docker container to prevent any access to the host system. Always manage credentials securely in `credentials.yaml` and use file permissions to restrict access; never hard-code them.
+
+---
+
+### ❓ Troubleshooting & FAQ
+
+- **`OperationalError: connection to server failed`**: This error almost always means the PostgreSQL server is not running or the credentials in `credentials.yaml` are incorrect. Ensure the database server is active and double-check your username, password, host, and database name.
+
+- **`Docker is not running`**: The Secure Code Grader requires the Docker daemon to be active. Make sure you have started Docker Desktop or the Docker service on your system before running the application.
+
+- **`Ollama model not found`**: Ensure the Ollama application is running and that you have successfully pulled the required model by running `ollama pull mistral` in your terminal.
+
+- **`ModuleNotFoundError`**: If you see this after installation, your Python environment may not be configured correctly. Ensure you are running `streamlit run app.py` from the same virtual environment where you installed the `requirements.txt` packages.
 
 ---
 
 ### 🗺️ Project Roadmap
 
-- [ ] **Full MLOps Integration:** Implement an end-to-end MLflow pipeline for tracking experiments and versioning models/feedback.
-- [ ] **LMS Integration:** Develop production-ready connectors for popular Learning Management Systems like ILIAS and Canvas.
-- [ ] **Activate Multimodal Grading:** Implement the OCR and image-processing pipeline for grading graphical and handwritten submissions.
-- [ ] **Analytics Dashboard:** Build a dashboard for educators to visualize class performance, question difficulty, and grading consistency.
+- [ ] **Full MLOps Integration:** Implement an end-to-end MLflow pipeline for tracking experiments and versioning models, prompts, and feedback.
+- [ ] **Expand LMS Connectors:** Develop production-ready connectors for other popular LMS platforms like Canvas and Moodle.
+- [ ] **Advanced Multimodal:** Enhance OCR capabilities for complex handwritten formulas and low-quality images using advanced computer vision models.
+- [ ] **Analytics Dashboard:** Build out the analytics page to provide educators with deep insights into class performance, question difficulty, and grading consistency.
 
 ---
 
@@ -148,18 +243,10 @@ This project was developed by **Vedant M.** as a dedicated effort to explore the
 
 ### Connect with Me
 
-Feel free to reach out, connect, or follow my work. I'm always open to discussions, collaborations, or a friendly chat about technology.
-
 <p align="left">
-  <a href="https://github.com/vedant-m" target="_blank">
-    <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
-  </a>
-  <a href="https://www.linkedin.com/in/your-linkedin-profile/" target="_blank">
-    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
-  </a>
-  <a href="mailto:your-email@example.com">
-    <img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Gmail"/>
-  </a>
+  <a href="https://github.com/vedant-m" target="_blank"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/></a>
+  <a href="https://www.linkedin.com/in/your-linkedin-profile/" target="_blank"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/></a>
+  <a href="mailto:your-email@example.com"><img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Gmail"/></a>
 </p>
 
 ---
