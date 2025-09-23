@@ -1,8 +1,8 @@
 
 # 🤖 AI Grading Framework: A Multi-Agent Approach
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/release/python-380/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An advanced, AI-powered grading platform designed to bring reliability, consistency, and transparency to automated academic assessment. This project moves beyond single-model limitations by implementing a sophisticated multi-agent architecture where a team of AI agents collaborates to grade student work. 
 
@@ -23,6 +23,21 @@ Featuring a full Human-in-the-Loop (HITL) workflow, secure sandboxed code execut
 | 🧑‍🏫 **Human-in-the-Loop** | Provides educators with an intuitive UI to review, edit, and finalize all AI-generated grades, ensuring they always have the final say. |
 
 </div>
+
+---
+
+### 🏗️ Project Architecture
+
+The system is designed with a modern, multi-tiered architecture to ensure a clean separation of concerns:
+
+- **Frontend:** A user-friendly interface built with **Streamlit** provides all user-facing interactions, from data upload to grade reviews.
+- **Backend:** A robust **Python** server acts as the central orchestrator, handling business logic, database transactions, and job delegation to the AI engine.
+- **Database:** A **PostgreSQL** database serves as the single source of truth, storing all user data, submissions, and grading results with relational integrity.
+- **AI & Data Layer:** This core layer includes:
+  - The **AI Grading Engine** which manages the multi-agent system.
+  - **Ollama** for serving local LLMs like Mistral.
+  - A **FAISS Vector Store** that powers the RAG system's memory.
+  - A **Docker Sandbox** for securely executing and testing student code.
 
 ---
 
@@ -99,19 +114,22 @@ streamlit run app.py
 
 Your web browser will automatically open to the application's local URL (usually `http://localhost:8501`). You can now log in and begin exploring the future of grading!
 
-## 📘 Usage Example: Professor PDF Format
+---
 
-To ensure accurate parsing, professor documents containing the rubric and questions should follow a clear format. The system is designed to parse key-value pairs and section headers.
+## 🤝 Contributing
 
-<div style="background: #f9fafb; border-radius: 8px; padding: 18px; font-family: monospace; font-size: 15px; color: #234; margin-bottom: 18px; margin-top: 2px; border-left: 4px solid #477ddb; box-shadow: 0 1.5px 7px #253d6a12; overflow-x: auto; white-space: pre-wrap;">
-Professor: Dr. Smith<br>
-Course: AI Fundamentals<br>
-Assignment No: 2<br><br>
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-Q1:<br>
-Question: Explain supervised vs. unsupervised learning.<br>
-Ideal Answer: Supervised learning uses labeled data...<br>
-Rubric:<br>
-- Correct definition (2 pts)<br>
-- Mention of labeled vs. unlabeled data (3 pts)
-</div>
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
+
+---
+
+## 📜 License
+
+Distributed under the **GNU General Public License v3.0**. See `LICENSE` for more information.
