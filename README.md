@@ -14,6 +14,22 @@ An advanced academic grading framework built on **LangChain** that leverages a *
 
 ---
 
+### 📚 Project Documentation
+
+For a complete understanding of the project, from its academic foundations to its technical implementation, please refer to the detailed documentation in the `docs/` folder. 
+
+<div align="center">
+
+| Document | Description |
+| :---: | :--- |
+| **[Project Report (`docs/project_report.md`)]** | The original thesis report, covering the project's background, literature review, and a detailed analysis of its novel contributions. |
+| **[System Architecture (`docs/DESIGN.md`)]** | A deep dive into the technical architecture, detailing the design of the multi-agent system, the RAG implementation, and the ETL pipelines. |
+| **[API Reference (`docs/API.md`)]** | Comprehensive documentation for the project's internal and external APIs, including all endpoints and data models. |
+
+</div>
+
+---
+
 ### 🤔 Why This Framework?
 
 While single-model LLMs can grade assignments, they suffer from inherent non-determinism and can be easily influenced by subtle changes in prompt phrasing. This leads to inconsistent and unreliable results—a critical failure for educational tools. 
@@ -76,13 +92,11 @@ graph TD
 | :---: | :--- |
 | 🤖 **Multi-Agent Collaboration** | Simulates a peer review using a team of LangChain agents to grade concurrently, ensuring fairer, more robust, and less biased scoring through consensus. |
 | 💡 **Explainable AI** | Delivers transparent, rubric-aligned justifications for every score. Understand not just the *what*, but the *why* behind each grade. |
-| 🧠 **RAG-Powered Consistency** | Leverages a FAISS vector store to build an institutional memory from human-verified corrections, ensuring consistent application of standards over time. |
-| 📊 **Professor Dashboard** | Provides rich analytics on student performance, question difficulty, and grading consistency across the entire class. |
-| 🌍 **Multilingual Support** | Capable of grading assignments and providing feedback in over 50 languages, with a robust model for on-device translation and language identification. |
+| 🧠 **RAG-Powered Consistency** | Leverages a FAISS vector store and Sentence-Transformers to build an institutional memory, ensuring consistent application of standards over time. |
 | 🔒 **Secure Code Evaluation** | Executes programming assignments in an isolated Docker sandbox, combining objective `unittest` results with qualitative AI feedback on code style. |
 | 🧑‍🏫 **Human-in-the-Loop** | Provides educators with an intuitive UI to review, edit, and finalize all AI-generated grades, ensuring they always have the final say. |
 | 🔌 **LMS Integration** | Features built-in connectivity for the **ILIAS** Learning Management System, with a modular design for future platform support. |
-| 🖼️ **Multimodal Grading** | Actively grades image-based answers and diagrams using an integrated **Tesseract OCR** and **Firebase ML Kit** pipeline. |
+| 🖼️ **Multimodal Grading** | Actively grades image-based answers, handwritten notes, and diagrams using an integrated **Tesseract OCR** pipeline. |
 
 </div>
 
@@ -93,15 +107,16 @@ graph TD
 *A comprehensive list of the key technologies and libraries used in this project.*
 
 <p align="center">
-  <b>AI Orchestration & Agents</b><br>
+  <b>AI Orchestration & Models</b><br>
   <img src="https://img.shields.io/badge/LangChain-009688?style=for-the-badge&logo=langchain&logoColor=white" alt="LangChain" />
   <img src="https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white" alt="Ollama" />
+  <img src="https://img.shields.io/badge/Mistral-FF9900?style=for-the-badge&logo=mistral-ai&logoColor=white" alt="Mistral" />
+  <img src="https://img.shields.io/badge/Llama-6F2A8A?style=for-the-badge&logo=meta&logoColor=white" alt="Llama" />
 </p>
 <p align="center">
-  <b>RAG, Embeddings & Multimodal</b><br>
+  <b>RAG, Embeddings & OCR</b><br>
   <img src="https://img.shields.io/badge/FAISS-3B5998?style=for-the-badge&logo=facebook&logoColor=white" alt="FAISS" />
   <img src="https://img.shields.io/badge/Sentence Transformers-3B769F?style=for-the-badge" alt="Sentence Transformers" />
-  <img src="https://img.shields.io/badge/Firebase%20ML%20Kit-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase ML Kit" />
   <img src="https://img.shields.io/badge/Tesseract-FF6F61?style=for-the-badge&logo=tesseract&logoColor=white" alt="Tesseract" />
 </p>
 <p align="center">
@@ -227,11 +242,11 @@ Navigate to `http://localhost:8501` to begin!
 
 ### 🗺️ Project Roadmap
 
-- [ ] **Full MLOps Integration:** Implement an end-to-end MLflow pipeline for tracking experiments and versioning models, prompts, and feedback.
-- [ ] **Expand LMS Connectors:** Develop production-ready connectors for other popular LMS platforms like Canvas and Moodle.
-- [ ] **Advanced Multimodal:** Enhance OCR capabilities for complex handwritten formulas and low-quality images using advanced computer vision models.
-- [ ] **Support for More LLMs:** Deepen the model-agnostic design by adding official support for other major APIs like OpenAI's GPT series and Google's Gemini family.
-- [ ] **Enhanced Analytics:** Build out the analytics dashboard to provide educators with deeper insights into class performance and grading consistency.
+- [ ] **Formalize MLOps Pipelines:** Move from ad-hoc experiments to a fully reproducible MLOps workflow using tools like MLflow. This includes versioning datasets, prompts, and fine-tuned models to ensure that every grade can be traced back to a specific model and configuration.
+- [ ] **Deepen Dashboard Analytics:** Evolve the Professor Dashboard from a reporting tool into a predictive one. Implement features to track student progress longitudinally, flag potential at-risk students early, and provide detailed variance analysis between grading agents.
+- [ ] **Advanced Multimodal Understanding:** Go beyond simple OCR. The next goal is to implement models capable of interpreting complex, handwritten mathematical equations and scientific diagrams, making the framework viable for advanced STEM courses.
+- [ ] **Create a Community Hub:** Build a platform for educators to share, rate, and reuse effective grading rubrics and agent personas. This will create a community-driven library that accelerates adoption and improves grading quality for everyone.
+- [ ] **Expand API & LMS Integrations:** In addition to developing connectors for Canvas and Moodle, create a robust, versioned REST API for the grading engine. This will allow for deeper integrations with a wider range of institutional tools beyond just LMS platforms.
 
 ---
 
@@ -243,7 +258,7 @@ Contributions are the lifeblood of the open-source community. If you have ideas 
 
 ## 👨‍💻 About the Author
 
-This project was developed by **Vedant Shivnekar.** as a dedicated effort to explore the frontiers of AI in education. Driven by a passion for building reliable and practical machine learning systems, this framework is a testament to the potential of multi-agent architectures.
+This project was developed by **Vedant M.** as a dedicated effort to explore the frontiers of AI in education. Driven by a passion for building reliable and practical machine learning systems, this framework is a testament to the potential of multi-agent architectures.
 
 ### Connect with Me
 
