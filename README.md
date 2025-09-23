@@ -1,110 +1,117 @@
-# LLM Academic Grading System
 
-This project is an AI-powered multilingual grading platform designed to assist educators in evaluating student submissions. It leverages Large Language Models (LLMs) to provide automated grading, explainability, and rich analytics.
+# 🤖 AI Grading Framework: A Multi-Agent Approach
 
-## Features
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/release/python-380/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-- **Automated Grading:** Utilizes LLMs to grade student answers based on a provided rubric.
-- **Explainability:** Generates explanations for the assigned grades, providing insights into the grading process.
-- **Multilingual Support:** Supports grading and feedback in multiple languages.
-- **Rich Analytics:** Offers detailed analytics on student performance and grading consistency.
+An advanced, AI-powered grading platform designed to bring reliability, consistency, and transparency to automated academic assessment. This project moves beyond single-model limitations by implementing a sophisticated multi-agent architecture where a team of AI agents collaborates to grade student work. 
 
-## Getting Started
+Featuring a full Human-in-the-Loop (HITL) workflow, secure sandboxed code execution, and a RAG-powered institutional memory, this framework is built for the future of grading.
 
-### Prerequisites
+---
+
+### ✨ Core Features
+
+<div align="center">
+
+| Feature | Description |
+| :---: | :--- |
+| 🤖 **Multi-Agent Collaboration** | Simulates a peer review by using diverse AI agents to grade concurrently, ensuring fairer, more robust, and less biased scoring through consensus. |
+| 💡 **Explainable AI** | Delivers transparent, rubric-aligned justifications for every score. Understand not just the *what*, but the *why* behind each grade. |
+| 🧠 **RAG-Powered Consistency** | Leverages a FAISS vector store to build an institutional memory from human-verified corrections, ensuring consistent application of standards over time. |
+| 🔒 **Secure Code Evaluation** | Executes programming assignments in an isolated Docker sandbox, combining objective `unittest` results with qualitative AI feedback on code style. |
+| 🧑‍🏫 **Human-in-the-Loop** | Provides educators with an intuitive UI to review, edit, and finalize all AI-generated grades, ensuring they always have the final say. |
+
+</div>
+
+---
+
+## 🚀 Getting Started
+
+This guide will walk you through deploying the AI Grading Framework on your local machine.
+
+### 1. Prerequisites
+
+Before you begin, ensure the following services are installed and running:
 
 - Python 3.8+
-- Pip
-- Ollama
+- Docker
+- PostgreSQL
+- [Ollama](https://ollama.com/) for serving local LLMs
 
-### Installation
+### 2. Environment Setup
 
-1. **Clone the repository:**
+Follow these steps to configure your environment and install the necessary components.
 
-   ```bash
-   git clone https://github.com/your-username/llm-academic-grading-system.git
-   cd llm-academic-grading-system
-   ```
+**Step 1: Clone the Repository**
 
-2. **Install the dependencies:**
+Open your terminal and clone the project source code.
+```bash
+git clone https://github.com/vedant-m/multi-agent-llm-grader.git
+cd multi-agent-llm-grader
+```
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+**Step 2: Install Dependencies**
 
-3. **Set up the environment variables:**
+Create a virtual environment (optional but recommended) and install the required Python packages.
+```bash
+pip install -r requirements.txt
+```
 
-   Create a `.env` file in the root directory and add the following:
+**Step 3: Configure the Database**
 
-   ```
-   OLLAMA_MODEL=mistral
-   EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
-   DB_TYPE=postgres
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=grading_db
-   DB_USER=admin
-   DB_PASSWORD=password
-   ```
+Log in to PostgreSQL and create the dedicated user and database for the application. These credentials match the default `credentials.yaml`.
+```sql
+-- Connect via psql or your preferred SQL client
+CREATE DATABASE autograder_db;
+CREATE USER vedant WITH PASSWORD 'vedant';
+GRANT ALL PRIVILEGES ON DATABASE autograder_db TO vedant;
+```
 
-### Running the Application
+**Step 4: Initialize the Database Schema**
 
-1. **Start the Ollama service:**
+Run the initialization script to automatically set up all required tables.
+```bash
+python init_db.py
+```
 
-   ```bash
-   ollama serve
-   ```
+**Step 5: Pull the Local LLM**
 
-2. **Run the Streamlit application:**
+Ensure Ollama is running, then pull the `mistral` model, which is used by the grading engine.
+```bash
+ollama pull mistral
+```
 
-   ```bash
-   streamlit run main.py
-   ```
+### 3. Running the Application
 
-## Usage
+With the environment configured, you are now ready to launch the application.
 
-1. **Upload the grading rubric and student submissions.**
-2. **The application will automatically grade the submissions and provide feedback.**
-3. **Review the grading results and analytics.**
+**Step 1: Start Services**
 
-## Contributing
+Ensure the **Docker** daemon and the **Ollama** application are running in the background.
 
-Contributions are welcome! Please open an issue or submit a pull request to contribute to this project.
+**Step 2: Launch the Streamlit App**
 
-## License
+From the root of the project directory, run the following command:
+```bash
+streamlit run app.py
+```
 
-This project is licensed under the Apache License 2.0. See the `LICENSE` file for more details. Your professor suggested the GPL License, so you may want to update the license file accordingly.
+Your web browser will automatically open to the application's local URL (usually `http://localhost:8501`). You can now log in and begin exploring the future of grading!
 
-## Credits
+## 📘 Usage Example: Professor PDF Format
 
-This project is built upon the work of numerous open-source projects and concepts. We extend our gratitude to the developers and communities behind these indispensable tools.
+To ensure accurate parsing, professor documents containing the rubric and questions should follow a clear format. The system is designed to parse key-value pairs and section headers.
 
-### AI and Machine Learning
+<div style="background: #f9fafb; border-radius: 8px; padding: 18px; font-family: monospace; font-size: 15px; color: #234; margin-bottom: 18px; margin-top: 2px; border-left: 4px solid #477ddb; box-shadow: 0 1.5px 7px #253d6a12; overflow-x: auto; white-space: pre-wrap;">
+Professor: Dr. Smith<br>
+Course: AI Fundamentals<br>
+Assignment No: 2<br><br>
 
-*   **Agentic AI and Multi-Agent Systems:** The core grading engine employs a multi-agent architecture, where different specialized agents handle various tasks like routing, grading different types of content (text, math, code), and fusing their outputs. This design is inspired by the principles of agent-based systems and makes the grading process more robust and modular.
-*   **Retrieval-Augmented Generation (RAG):** We use a RAG pipeline to provide relevant context to the grading models. This involves a `SimpleVectorStore` inspired by vector databases like **FAISS** and **Chroma**.
-*   **LLM Orchestration:** The concepts of chaining and agentic behavior are influenced by frameworks like **LangChain**.
-*   **Large Language Models:** The system is designed to work with various LLMs, and we are thankful for the open-source models and the tools to run them, such as **Ollama**.
-*   **Core Libraries:**
-    *   **Hugging Face Transformers:** For access to state-of-the-art models.
-    *   **Sentence-Transformers:** For generating high-quality embeddings for our RAG pipeline.
-    *   **PyTorch:** As the foundational deep learning framework.
-*   **Fine-Tuning:**
-    *   **PEFT (Parameter-Efficient Fine-Tuning):** For efficient model fine-tuning.
-    *   **bitsandbytes:** For 8-bit and 4-bit quantization.
-    *   **TRL (Transformer Reinforcement Learning):** For fine-tuning transformer models.
-
-### Backend and Data Processing
-
-*   **PDF Parsing:** **PyMuPDF (Fitz)** is used for extracting text and other data from PDF documents.
-*   **Database:** **PostgreSQL** serves as our robust and reliable database.
-*   **Symbolic Mathematics:** **SymPy** is used for handling and evaluating mathematical expressions.
-*   **Numerical Computing:** **NumPy** and **Pandas** are used for data manipulation and analysis.
-
-### Frontend
-
-*   **Web Framework:** The user interface is built with **Streamlit**, an open-source app framework for Machine Learning and Data Science projects.
-
-### General
-
-*   **Python:** The programming language this project is built in.
+Q1:<br>
+Question: Explain supervised vs. unsupervised learning.<br>
+Ideal Answer: Supervised learning uses labeled data...<br>
+Rubric:<br>
+- Correct definition (2 pts)<br>
+- Mention of labeled vs. unlabeled data (3 pts)
+</div>
