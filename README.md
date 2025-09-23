@@ -76,11 +76,13 @@ graph TD
 | :---: | :--- |
 | 🤖 **Multi-Agent Collaboration** | Simulates a peer review using a team of LangChain agents to grade concurrently, ensuring fairer, more robust, and less biased scoring through consensus. |
 | 💡 **Explainable AI** | Delivers transparent, rubric-aligned justifications for every score. Understand not just the *what*, but the *why* behind each grade. |
-| 🧠 **RAG-Powered Consistency** | Leverages a FAISS vector store and Sentence-Transformers to build an institutional memory, ensuring consistent application of standards over time. |
+| 🧠 **RAG-Powered Consistency** | Leverages a FAISS vector store to build an institutional memory from human-verified corrections, ensuring consistent application of standards over time. |
+| 📊 **Professor Dashboard** | Provides rich analytics on student performance, question difficulty, and grading consistency across the entire class. |
+| 🌍 **Multilingual Support** | Capable of grading assignments and providing feedback in over 50 languages, with a robust model for on-device translation and language identification. |
 | 🔒 **Secure Code Evaluation** | Executes programming assignments in an isolated Docker sandbox, combining objective `unittest` results with qualitative AI feedback on code style. |
 | 🧑‍🏫 **Human-in-the-Loop** | Provides educators with an intuitive UI to review, edit, and finalize all AI-generated grades, ensuring they always have the final say. |
 | 🔌 **LMS Integration** | Features built-in connectivity for the **ILIAS** Learning Management System, with a modular design for future platform support. |
-| 🖼️ **Multimodal Grading** | Actively grades image-based answers, handwritten notes, and diagrams using an integrated **Tesseract OCR** pipeline. |
+| 🖼️ **Multimodal Grading** | Actively grades image-based answers and diagrams using an integrated **Tesseract OCR** and **Firebase ML Kit** pipeline. |
 
 </div>
 
@@ -96,9 +98,10 @@ graph TD
   <img src="https://img.shields.io/badge/Ollama-000000?style=for-the-badge&logo=ollama&logoColor=white" alt="Ollama" />
 </p>
 <p align="center">
-  <b>RAG, Embeddings & OCR</b><br>
+  <b>RAG, Embeddings & Multimodal</b><br>
   <img src="https://img.shields.io/badge/FAISS-3B5998?style=for-the-badge&logo=facebook&logoColor=white" alt="FAISS" />
   <img src="https://img.shields.io/badge/Sentence Transformers-3B769F?style=for-the-badge" alt="Sentence Transformers" />
+  <img src="https://img.shields.io/badge/Firebase%20ML%20Kit-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase ML Kit" />
   <img src="https://img.shields.io/badge/Tesseract-FF6F61?style=for-the-badge&logo=tesseract&logoColor=white" alt="Tesseract" />
 </p>
 <p align="center">
@@ -227,19 +230,20 @@ Navigate to `http://localhost:8501` to begin!
 - [ ] **Full MLOps Integration:** Implement an end-to-end MLflow pipeline for tracking experiments and versioning models, prompts, and feedback.
 - [ ] **Expand LMS Connectors:** Develop production-ready connectors for other popular LMS platforms like Canvas and Moodle.
 - [ ] **Advanced Multimodal:** Enhance OCR capabilities for complex handwritten formulas and low-quality images using advanced computer vision models.
-- [ ] **Analytics Dashboard:** Build out the analytics page to provide educators with deep insights into class performance, question difficulty, and grading consistency.
+- [ ] **Support for More LLMs:** Deepen the model-agnostic design by adding official support for other major APIs like OpenAI's GPT series and Google's Gemini family.
+- [ ] **Enhanced Analytics:** Build out the analytics dashboard to provide educators with deeper insights into class performance and grading consistency.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**. Please fork the repo and create a pull request, or open an issue with your suggestions.
+Contributions are the lifeblood of the open-source community. If you have ideas for improvements, bug fixes, or new features, please don't hesitate to fork the repo and create a pull request. Every contribution, no matter how small, is **greatly appreciated**.
 
 ---
 
 ## 👨‍💻 About the Author
 
-This project was developed by **Vedant M.** as a dedicated effort to explore the frontiers of AI in education. Driven by a passion for building reliable and practical machine learning systems, this framework is a testament to the potential of multi-agent architectures.
+This project was developed by **Vedant Shivnekar.** as a dedicated effort to explore the frontiers of AI in education. Driven by a passion for building reliable and practical machine learning systems, this framework is a testament to the potential of multi-agent architectures.
 
 ### Connect with Me
 
